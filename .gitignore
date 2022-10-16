@@ -4,6 +4,10 @@
 *.db
 *.sqlite
 
+# Specific IDEA files
+.idea/dataSources.xml
+
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
