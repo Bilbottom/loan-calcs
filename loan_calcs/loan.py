@@ -1,8 +1,8 @@
 """
 
 """
-from enum import Enum, auto
 import math
+from enum import Enum, auto
 from decimal import Decimal
 
 
@@ -21,7 +21,6 @@ class RateType(Enum):
     FIXED_PRINCIPAL = auto()
 
 
-# noinspection PyArgumentList
 class InterestApplyMethod(Enum):
     """Whether the interest is applied before or after the repayment."""
     BEFORE = 0
