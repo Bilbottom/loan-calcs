@@ -4,8 +4,8 @@
 *.db
 *.sqlite
 
-# Specific IDEA files
-.idea/dataSources.xml
+# IDEA files
+.idea/
 
 
 ### Python template
