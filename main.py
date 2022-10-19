@@ -49,6 +49,13 @@ def main() -> None:
         interest_rate_type= InterestRateType.VARIABLE,
         repayment_type= RepaymentType.FIXED_REPAYMENT,
     )
+    fixed_principal_example = LoanExample(
+        loan_amount=100_000,
+        interest_rate=0.075,
+        total_repayments=100,
+        interest_rate_type= InterestRateType.VARIABLE,
+        repayment_type= RepaymentType.FIXED_PRINCIPAL,
+    )
     interest_only_example = LoanExample(
         loan_amount=117_000,
         interest_rate=0.06,
@@ -57,10 +64,10 @@ def main() -> None:
         repayment_type= RepaymentType.INTEREST_ONLY,
     )
 
-    loan = create_loan(fixed_repayment_example)
+    loan = create_loan(fixed_principal_example)
     print(loan.__dict__)
     print(loan._calculate_periodic_repayment())
-    # print(loan.calculate_balance(period=0))
+    print(loan.calculate_balance(period=20))
 
 
 if __name__ == '__main__':

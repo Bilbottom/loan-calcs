@@ -42,7 +42,7 @@ class InterestApplyMethod(Enum):
 
 
 def _to_decimal(value: Any) -> Decimal:
-    """Casting a float to a decimal does not preserve the precision so casting to a string first is preferable."""
+    """Casting a float directly to a decimal messes with the precision so casting to a string first is preferable."""
     # sourcery skip: assign-if-exp, reintroduce-else
     if value is None:
         # Purposely pass None into Decimal to generate the correct error
@@ -51,10 +51,7 @@ def _to_decimal(value: Any) -> Decimal:
 
 
 def decimal(round_to: int = None) -> Callable:
-    """Decorator for the `_to_decimal` function with an optional precision to round to.
-
-    TODO: Using the Decimal type should mean that the rounding isn't needed. Confirm or deny this.
-    """
+    """Decorator for the `_to_decimal` function with an optional precision to round to."""
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs) -> Any:
@@ -69,8 +66,8 @@ def decimal(round_to: int = None) -> Callable:
 def _calculate_amortised_rate(interest_rate: Decimal, n: Decimal) -> Decimal:
     """Calculate the amortised rate at `n`.
 
-    Let :math:`R` be the interest rate on the loan. Then the amortised rate is given by :math:`(1 + R)^{n}`.
+    Let :math:`R` be the interest rate on a loan. Then the amortised rate is given by :math:`(1 + R)^{n}`.
     """
     if n < 0:
         raise AssertionError('The amortise rate period has to be positive.')
-    return _to_decimal((interest_rate + Decimal(1)) ** n)
+    return _to_decimal((Decimal(1) + interest_rate) ** n)
