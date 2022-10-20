@@ -110,14 +110,14 @@ class Loan(ABC):
         """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`."""
         pass
 
-    # @abstractmethod
-    # def calculate_cumulative_interest(self, period: int) -> Decimal:
-    #     """Calculate the total of the interest that has been accrued (including the interest that has been paid off) at
-    #      the end of period :math:`n`.
-    #
-    #      In Financial terms, this is called the "interest income" (for the bank/entity that issued the loan).
-    #      """
-    #     pass
+    @abstractmethod
+    def calculate_cumulative_interest(self, period: int) -> Decimal:
+        """Calculate the total of the interest that has been accrued (including the interest that has been paid off) at
+         the end of period :math:`n`.
+
+         In Financial terms, this is called the "interest income" (for the bank/entity that issued the loan).
+         """
+        pass
 
 
 class FixedRepaymentLoan(Loan):
@@ -241,6 +241,16 @@ class FixedRepaymentLoan(Loan):
             )
         )
 
+    @decimal(round_to=2)
+    def calculate_cumulative_interest(self, period: int) -> Decimal:
+        """Calculate the cumulative interest accrued at the end of period :math:`n`.
+
+        The cumulative interest accrued at the end of period :math:`n` for a fixed repayment loan is:
+          .. math::
+            I_{n} = TODO: formula here, also decide on notation for this (\\sum I_{k} or I_{n})
+        """
+        pass
+
 
 class FixedPrincipalLoan(Loan):
     """A fixed principal loan.
@@ -307,10 +317,10 @@ class FixedPrincipalLoan(Loan):
     def _calculate_loan_amount(self, custom_loan_amount: Decimal) -> Decimal:
         """Calculate the loan amount, :math:`L`.
 
-        Similar to how the principal repayment isn't necessarily computed the loan amount, the loan amount also isn't
-        necessarily computed using the principal repayment. Again, there are 2 scenarios:
-            1. The loan value is the periodic principal multiplied by the number of repayments, :math:`PN`
-            2. The loan value is a fixed amount, with lower value period repayments and a larger final repayment
+        Similar to how the principal repayment isn't necessarily computed using the loan amount, the loan amount also
+        isn't necessarily computed using the principal repayment. Again, there are 2 scenarios:
+            1. The loan value is the periodic principal multiplied by the number of repayments, :math:`PN`.
+            2. The loan value is a fixed amount, with lower value period repayments and a larger final repayment.
         """
         calculated_loan = self.periodic_repayment * self.total_repayments
         if custom_loan_amount is None:
@@ -326,9 +336,6 @@ class FixedPrincipalLoan(Loan):
     @decimal(round_to=2)
     def _calculate_periodic_repayment(self, custom_periodic_repayment: Decimal = None) -> Decimal:
         """Calculate the period repayment, :math:`P`.
-
-        This uses the interest rate (:math:`R`), total repayments (:math:`N`), loan amount (:math:`L`), and whether the
-        interest is applied before or after the repayment (:math:`b`).
 
         The period repayment value, :math:`P`, for a fixed principal loan is:
           .. math::
@@ -350,15 +357,24 @@ class FixedPrincipalLoan(Loan):
             return custom_periodic_repayment
 
     @decimal
-    def _calculate_total_repayments(self) -> int:
-        """Calculate the total repayments (:math:`N`) using the interest rate (:math:`R`), period repayment (:math:`R`),
-        loan amount (:math:`L`), and whether the interest is applied before or after the repayment (:math:`b`).
+    def _calculate_total_repayments(self, custom_total_repayments: int = None) -> int:
+        """Calculate the total repayments, :math:`N`.
 
-        The natural log form of the calculation for the total repayments, :math:`N`, of a fixed principal loan is:
-          .. math::
-            N = TODO: <formula here>
+        Similar to how the loan amount isn't necessarily computed the principal repayment amount, the total repayments
+        also isn't necessarily computed using the other components of the loan. Again, there are 2 scenarios:
+            1. The total repayments is the loan amount divided by the periodic principal, :math:`L/P`.
+            2. The total repayments is a fixed amount, with lower value period repayments and a larger final repayment.
         """
-        pass
+        calculated_repayments = math.ceil(self.loan_amount / self.principal_repayment)
+        if custom_total_repayments is None:
+            return calculated_repayments
+        elif custom_total_repayments > calculated_repayments:
+            raise ValueError(
+                f'The custom number of repayments, {custom_total_repayments:.4f}, exceeds the maximum value '
+                f'allowed by the loan value and the principal repayment value, {calculated_repayments:.4f}'
+            )
+        else:
+            return custom_total_repayments
 
     @decimal(round_to=2)
     def calculate_balance(self, period: Decimal) -> Decimal:
@@ -373,6 +389,16 @@ class FixedPrincipalLoan(Loan):
             B_{n} = L - n * P_{p}
         """
         return self.loan_amount - (period * self.principal_repayment)
+
+    @decimal(round_to=2)
+    def calculate_cumulative_interest(self, period: int) -> Decimal:
+        """Calculate the cumulative interest accrued at the end of period :math:`n`.
+
+        The cumulative interest accrued at the end of period :math:`n` for a fixed principal loan is:
+          .. math::
+            I_{n} = TODO: formula here, also decide on notation for this (\\sum I_{k} or I_{n})
+        """
+        pass
 
 
 class InterestOnlyLoan(Loan):
@@ -463,3 +489,13 @@ class InterestOnlyLoan(Loan):
             B_{n} = 0,  n = N
         """
         return 0 if period == self.total_repayments else self.loan_amount
+
+    @decimal(round_to=2)
+    def calculate_cumulative_interest(self, period: int) -> Decimal:
+        """Calculate the cumulative interest accrued at the end of period :math:`n`.
+
+        The cumulative interest accrued at the end of period :math:`n` for a interest-only loan is:
+          .. math::
+            I_{n} = TODO: formula here, also decide on notation for this (\\sum I_{k} or I_{n})
+        """
+        pass
