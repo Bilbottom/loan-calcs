@@ -3,6 +3,7 @@ Similar packages:
 * https://loan-calculator.readthedocs.io/en/latest/index.html
 * https://mortgage.readthedocs.io/en/latest/index.html
 """
+import json
 from decimal import Decimal
 from typing import Protocol
 from dataclasses import dataclass
@@ -15,6 +16,24 @@ from loan_calcs.loan import (
     FixedPrincipalLoan,
     InterestOnlyLoan
 )
+
+
+def pprint(json_text: str or dict, indent: int = 4) -> None:
+    """Pretty print JSON/dict objects."""
+    if isinstance(json_text, str):
+        json_text = json.loads(json_text)
+
+    try:
+        print(
+            json.dumps(
+                json_text,
+                sort_keys=True,
+                indent=indent,
+                separators=(',', ': ')
+            )
+        )
+    except TypeError:
+        print(json_text)
 
 
 @dataclass
@@ -40,34 +59,47 @@ def create_loan(loan_object: LoanExample) -> Loan:
     )
 
 
+def print_loan_details(loan_example: LoanExample) -> None:
+    """Print some loan details. Development only."""
+    properties = [
+        'loan_amount',
+        'interest_rate',
+        'total_repayments',
+        # 'fixed_periodic_repayment',
+    ]
+    loan: Loan = create_loan(loan_example)
+    details: dict = {key: loan.__dict__[key] for key in properties}
+    details['balance_at_20'] = loan.calculate_balance(period=20)
+    pprint(details)
+
+
 def main() -> None:
     """Entry point into this project."""
     fixed_repayment_example = LoanExample(
         loan_amount=100_000,
         interest_rate=0.075,
-        total_repayments=240,
-        interest_rate_type= InterestRateType.VARIABLE,
-        repayment_type= RepaymentType.FIXED_REPAYMENT,
+        total_repayments=100,
+        interest_rate_type=InterestRateType.VARIABLE,
+        repayment_type=RepaymentType.FIXED_REPAYMENT,
     )
     fixed_principal_example = LoanExample(
         loan_amount=100_000,
         interest_rate=0.075,
         total_repayments=100,
-        interest_rate_type= InterestRateType.VARIABLE,
-        repayment_type= RepaymentType.FIXED_PRINCIPAL,
+        interest_rate_type=InterestRateType.VARIABLE,
+        repayment_type=RepaymentType.FIXED_PRINCIPAL,
     )
     interest_only_example = LoanExample(
-        loan_amount=117_000,
-        interest_rate=0.06,
-        total_repayments=60,
-        interest_rate_type= InterestRateType.VARIABLE,
-        repayment_type= RepaymentType.INTEREST_ONLY,
+        loan_amount=100_000,
+        interest_rate=0.075,
+        total_repayments=100,
+        interest_rate_type=InterestRateType.VARIABLE,
+        repayment_type=RepaymentType.INTEREST_ONLY,
     )
 
-    loan = create_loan(fixed_principal_example)
-    print(loan.__dict__)
-    print(loan._calculate_periodic_repayment())
-    print(loan.calculate_balance(period=20))
+    print_loan_details(fixed_repayment_example)
+    print_loan_details(fixed_principal_example)
+    print_loan_details(interest_only_example)
 
 
 if __name__ == '__main__':
