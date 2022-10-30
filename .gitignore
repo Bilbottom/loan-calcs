@@ -8,8 +8,8 @@
 .idea/
 
 # TeX files
-/tex/
-!/tex/proofs.pdf
+/tex/compiled/
+!/tex/compiled/proofs.pdf
 
 
 ### Python template
