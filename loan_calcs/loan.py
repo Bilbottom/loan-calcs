@@ -9,7 +9,7 @@ from loan_calcs.utils import (
     RepaymentType,
     InterestRateType,
     InterestApplyMethod,
-    decimal,
+    _decimal,
     _to_decimal,
     _calculate_amortised_rate,
 )
@@ -30,7 +30,7 @@ class Loan(ABC):
         * The *principal* part, which is paying off the original money that was borrowed
         * The *interest* part, which is paying off the interest applied on the loan
 
-    In 'real life', a loan can have other components -- such as fees. These are outside the scope of these objects.
+    In 'real life', a loan can have other components such as fees. These are outside the scope of these objects.
     """
     def __init__(
         self, *,
@@ -42,8 +42,6 @@ class Loan(ABC):
         interest_rate_type: InterestRateType = InterestRateType.VARIABLE
     ) -> None:
         """Create a loan.
-
-        :param
 
         The `fixed_periodic_repayment` argument depends on the loan type:
             * For a fixed repayment loan, this corresponds to the total repayment value
@@ -145,6 +143,17 @@ class FixedRepaymentLoan(Loan):
             * The total repayment value, :math:`P`
 
         With any 3, the 4th can be determined.
+
+        :param loan_amount: The amount of money to be borrowed expressed as a float. For example, a loan of £10,000 has
+            a `loan_amount` value of 10_000.00.
+        :param interest_rate: The interest rate that will be used to compute the cost of the loan expressed in decimal
+            form. For example, a rate of 5.25% has an `interest_rate` value of 0.0525.
+        :param total_repayments: The number of repayments required to pay back the loan expressed as an integer. For
+            example, if 24 repayments are required then `total_repayments` has a value of 24.
+        :param fixed_periodic_repayment: TODO: Still deciding what to do here.
+        :param before_or_after: The interest on the loan can be applied before or after the repayment has been made
+            which impacts the calculations. Note that only a 'normal' loan (`RepaymentType.FIXED_REPAYMENT`) can have a
+            value of `InterestApplyMethod.AFTER`.
         """
         super().__init__(
             loan_amount=loan_amount,
@@ -154,7 +163,7 @@ class FixedRepaymentLoan(Loan):
             before_or_after=before_or_after
         )
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def _calculate_loan_amount(self) -> Decimal:
         """Calculate the loan amount, :math:`L`.
 
@@ -172,7 +181,7 @@ class FixedRepaymentLoan(Loan):
             / self.total_amortised_rate
         )
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def _calculate_periodic_repayment(self) -> Decimal:
         """Calculate the period repayment (:math:`P`).
 
@@ -190,7 +199,7 @@ class FixedRepaymentLoan(Loan):
             / (self.total_amortised_rate - Decimal(1))
         )
 
-    @decimal
+    @_decimal
     def _calculate_total_repayments(self) -> int:
         """Calculate the total repayments, :math:`N`.
 
@@ -222,7 +231,7 @@ class FixedRepaymentLoan(Loan):
                 / math.log(self.interest_rate + Decimal(1))
             )
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def calculate_balance(self, period: int) -> Decimal:
         """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`.
 
@@ -236,12 +245,12 @@ class FixedRepaymentLoan(Loan):
             * amortised_rate
             - (
                 self.periodic_repayment
-                * (self.interest_rate ** self.before_or_after)
+                * (self.interest_rate ** (self.before_or_after - 1))
                 * (amortised_rate - Decimal(1))
             )
         )
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def calculate_cumulative_interest(self, period: int) -> Decimal:
         """Calculate the cumulative interest accrued at the end of period :math:`n`.
 
@@ -313,7 +322,7 @@ class FixedPrincipalLoan(Loan):
         else:
             return custom_periodic_repayment
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def _calculate_loan_amount(self, custom_loan_amount: Decimal) -> Decimal:
         """Calculate the loan amount, :math:`L`.
 
@@ -333,7 +342,7 @@ class FixedPrincipalLoan(Loan):
         else:
             return custom_loan_amount
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def _calculate_periodic_repayment(self, custom_periodic_repayment: Decimal = None) -> Decimal:
         """Calculate the period repayment, :math:`P`.
 
@@ -356,7 +365,7 @@ class FixedPrincipalLoan(Loan):
         else:
             return custom_periodic_repayment
 
-    @decimal
+    @_decimal
     def _calculate_total_repayments(self, custom_total_repayments: int = None) -> int:
         """Calculate the total repayments, :math:`N`.
 
@@ -376,7 +385,7 @@ class FixedPrincipalLoan(Loan):
         else:
             return custom_total_repayments
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def calculate_balance(self, period: Decimal) -> Decimal:
         """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`.
 
@@ -390,7 +399,7 @@ class FixedPrincipalLoan(Loan):
         """
         return self.loan_amount - (period * self.principal_repayment)
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def calculate_cumulative_interest(self, period: int) -> Decimal:
         """Calculate the cumulative interest accrued at the end of period :math:`n`.
 
@@ -406,6 +415,8 @@ class InterestOnlyLoan(Loan):
 
     An interest-only loan is where each periodic repayment only pays off the accrued interest on the loan. The principal
     value of the loan is paid off in the final repayment.
+
+    TODO: An interest-only loan is just a special case of a fixed principal loan (fixed principal = 0).
     """
     _type: RepaymentType = RepaymentType.INTEREST_ONLY
 
@@ -439,7 +450,7 @@ class InterestOnlyLoan(Loan):
             before_or_after=before_or_after
         )
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def _calculate_loan_amount(self) -> Decimal:
         """Calculate the loan amount, :math:`L`.
 
@@ -451,7 +462,7 @@ class InterestOnlyLoan(Loan):
         """
         return self.periodic_repayment / self.interest_rate
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def _calculate_periodic_repayment(self) -> Decimal:
         """Calculate the period repayment, :math:`P`.
 
@@ -465,7 +476,7 @@ class InterestOnlyLoan(Loan):
         """
         return self.loan_amount * self.interest_rate
 
-    @decimal
+    @_decimal
     def _calculate_total_repayments(self) -> Decimal:
         """Calculate the total repayments, :math:`N`.
 
@@ -478,7 +489,7 @@ class InterestOnlyLoan(Loan):
         else:
             return self.total_repayments
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def calculate_balance(self, period: Decimal) -> Decimal:
         """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`.
 
@@ -490,7 +501,7 @@ class InterestOnlyLoan(Loan):
         """
         return 0 if period == self.total_repayments else self.loan_amount
 
-    @decimal(round_to=2)
+    @_decimal(round_to=2)
     def calculate_cumulative_interest(self, period: int) -> Decimal:
         """Calculate the cumulative interest accrued at the end of period :math:`n`.
 
