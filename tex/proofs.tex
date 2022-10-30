@@ -1,3 +1,42 @@
+\documentclass[a4paper, 10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\include{page-style}
+\include{environments}
+
+
 \begin{document}
-    Hello, World!
+\pagestyle{plain}
+
+\maketitle
+\tableofcontents
+
+\section{Definitions}\label{sec:definitions}
+\subsection{Notation}\label{subsec:notation}
+
+A loan is a fixed value of money borrowed by an entity and usually repaid over a series of instalments.\ The following notation is used for each of the components of the loan:
+\begin{itemize}
+    \item[$L$:] Loan amount.
+    \item[$R$:] Periodic interest rate.
+    \item[$N$:] Total number of repayments.
+    \item[$P$:] Total periodic repayment value.\ If this changes over time, the value at period $n$ is denoted $P_{n}$.
+    \item[$b$:] Whether the interest is applied before or after the repayment.
+    \item[$B_{n}$:] The balance on the loan at period $n$.
+\end{itemize}
+
+The periodic repayment for a loan usually has (at least) 2 components:
+\begin{itemize}
+    \item[$P_{P}$:] The principal part of the periodic repayment value, which is paying off the original money that was borrowed.
+    \item[$P_{I}$:] The interest part of the periodic repayment value, which is paying off the interest applied on the loan.
+\end{itemize}
+
+In `real life', a loan can have other components such as fees.\ These are outside the scope of these calculations.
+
+
+\subsection{Loan~Types}\label{subsec:loan-types}
+
+
+\section{Periodic~Repayment~Amount}\label{sec:periodic-repayment-amount}
+
+
 \end{document}
