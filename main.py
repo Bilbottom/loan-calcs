@@ -76,7 +76,9 @@ def print_loan_details(loan_example: LoanExample) -> None:
     ]
     loan: Loan = create_loan(loan_example)
     details: dict = {key: loan.__dict__[key] for key in properties}
-    details['balance_at_20'] = loan.calculate_balance(period=20)
+    details['balance_at_20'] = loan.calculate_balance_at_period(period=20)
+    details['interest_at_20'] = loan.calculate_repayment_interest_at_period(period=20)
+    details['principal_at_20'] = loan.calculate_repayment_principal_at_period(period=20)
     pprint(details)
 
 
@@ -105,8 +107,8 @@ def main() -> None:
     )
 
     print_loan_details(fixed_repayment_example)
-    print_loan_details(fixed_principal_example)
-    print_loan_details(interest_only_example)
+    # print_loan_details(fixed_principal_example)
+    # print_loan_details(interest_only_example)
 
 
 if __name__ == '__main__':
