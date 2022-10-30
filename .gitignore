@@ -4,6 +4,9 @@
 *.db
 *.sqlite
 
+# VSCode
+.vscode/
+
 # IDEA files
 .idea/
 
