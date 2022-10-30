@@ -59,7 +59,7 @@ def create_loan(loan_object: LoanExample) -> Loan:
         RepaymentType.FIXED_PRINCIPAL: FixedPrincipalLoan,
         RepaymentType.INTEREST_ONLY: InterestOnlyLoan,
     }
-    return loan_types[loan_object.repayment_type](
+    return loan_types[loan_object.repayment_type].build_helpful(
         loan_amount=loan_object.loan_amount,
         interest_rate=loan_object.interest_rate,
         total_repayments=loan_object.total_repayments
