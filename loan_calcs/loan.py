@@ -27,8 +27,8 @@ class Loan(ABC):
         * :math:`B_n`: The balance on the loan at period :math:`n`.
 
     The repayment for a loan usually has (at least) 2 components:
-        * The *principal* part, which is paying off the original money that was borrowed
-        * The *interest* part, which is paying off the interest applied on the loan
+        * The *principal* part, which is paying off the original money that was borrowed.
+        * The *interest* part, which is paying off the interest applied on the loan.
 
     In 'real life', a loan can have other components such as fees. These are outside the scope of these objects.
     """
@@ -44,8 +44,8 @@ class Loan(ABC):
         """Create a loan.
 
         The `fixed_periodic_repayment` argument depends on the loan type:
-            * For a fixed repayment loan, this corresponds to the total repayment value
-            * For a fixed principal loan, this corresponds to the principal part of the repayment value
+            * For a fixed repayment loan, this corresponds to the total repayment value.
+            * For a fixed principal loan, this corresponds to the principal part of the repayment value.
         """
         self.interest_rate_type = interest_rate_type
         self.before_or_after = before_or_after.value
@@ -104,8 +104,18 @@ class Loan(ABC):
         pass
 
     @abstractmethod
-    def calculate_balance(self, period: int) -> Decimal:
+    def calculate_balance_at_period(self, period: int) -> Decimal:
         """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`."""
+        pass
+
+    @abstractmethod
+    def calculate_repayment_principal_at_period(self, period: int) -> Decimal:
+        """Calculate the principal part of the repayment due on period :math:`n`."""
+        pass
+
+    @abstractmethod
+    def calculate_repayment_interest_at_period(self, period: int) -> Decimal:
+        """Calculate the interest part of the repayment due on period :math:`n`."""
         pass
 
     @abstractmethod
@@ -232,14 +242,14 @@ class FixedRepaymentLoan(Loan):
             )
 
     @_decimal(round_to=2)
-    def calculate_balance(self, period: int) -> Decimal:
+    def calculate_balance_at_period(self, period: int) -> Decimal:
         """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`.
 
         The balance at the end of period :math:`n`, :math:`b_{n}`, for a fixed repayment loan is:
           .. math::
             B_{n} = L(1 + R)^{n} - PR^{b - 1}((1 + R)^{n} - 1)
         """
-        amortised_rate = _calculate_amortised_rate(self.interest_rate, _to_decimal(period))
+        amortised_rate = _calculate_amortised_rate(self.interest_rate, _to_decimal(period))  # (1 + R)^{n}
         return (
             self.loan_amount
             * amortised_rate
@@ -249,6 +259,34 @@ class FixedRepaymentLoan(Loan):
                 * (amortised_rate - Decimal(1))
             )
         )
+
+    @_decimal(round_to=2)
+    def calculate_repayment_principal_at_period(self, period: int) -> Decimal:
+        """Calculate the principal part of the repayment due on period :math:`n`.
+
+        For a fixed repayment loan, the principal part of the repayment due on period :math:`n` is:
+          .. math::
+            P_{P, n} = P - P_{I, n} = P - B_{n - 1}R
+
+        This expands out to the following (although this isn't being used):
+          .. math::
+            P_{P, n} = P + PR^{b}((1 + R)^{n - 1} - 1) - LR(1 + R)^{n - 1}
+        """
+        return self.periodic_repayment - self.calculate_repayment_interest_at_period(period=period)
+
+    @_decimal(round_to=2)
+    def calculate_repayment_interest_at_period(self, period: int) -> Decimal:
+        """Calculate the interest part of the repayment due on period :math:`n`.
+
+        For a fixed repayment loan, the interest part of the repayment due on period :math:`n` is:
+          .. math::
+            P_{I, n} = B_{n - 1}R
+
+        This expands out to the following (although this isn't being used):
+          .. math::
+            P_{I, n} = LR(1 + R)^{n - 1} - PR^{b}((1 + R)^{n - 1} - 1)
+        """
+        return self.calculate_balance_at_period(period=period - 1) * self.interest_rate
 
     @_decimal(round_to=2)
     def calculate_cumulative_interest(self, period: int) -> Decimal:
@@ -386,7 +424,7 @@ class FixedPrincipalLoan(Loan):
             return custom_total_repayments
 
     @_decimal(round_to=2)
-    def calculate_balance(self, period: Decimal) -> Decimal:
+    def calculate_balance_at_period(self, period: Decimal) -> Decimal:
         """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`.
 
         The balance at the end of period :math:`n`, :math:`B_{n}`, for a fixed principal loan is simple when the
@@ -490,7 +528,7 @@ class InterestOnlyLoan(Loan):
             return self.total_repayments
 
     @_decimal(round_to=2)
-    def calculate_balance(self, period: Decimal) -> Decimal:
+    def calculate_balance_at_period(self, period: Decimal) -> Decimal:
         """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`.
 
         The balance at the end of period :math:`n`, :math:`b_{n}`, for an interest-only loan is:
