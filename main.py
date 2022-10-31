@@ -3,10 +3,10 @@ Similar packages:
 * https://loan-calculator.readthedocs.io/en/latest/index.html
 * https://mortgage.readthedocs.io/en/latest/index.html
 """
-import json
-from decimal import Decimal
-from typing import Protocol
 from dataclasses import dataclass
+from decimal import Decimal
+import json
+from typing import Protocol
 
 from loan_calcs.loan import (
     Loan,
@@ -18,7 +18,7 @@ from loan_calcs.loan import (
 )
 
 
-def pprint(json_text: str or dict, indent: int = 4) -> None:
+def pprint(json_text: str | dict, indent: int = 4) -> None:
     """Pretty print JSON/dict objects."""
     if isinstance(json_text, str):
         json_text = json.loads(json_text)
@@ -30,10 +30,17 @@ def pprint(json_text: str or dict, indent: int = 4) -> None:
                 sort_keys=True,
                 indent=indent,
                 separators=(',', ': '),
+                cls=MyEncoder,
             )
         )
-    except TypeError:
+    except TypeError as e:
+        print(repr(e))
         print(json_text)
+
+
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        return repr(obj)
 
 
 @dataclass
@@ -52,7 +59,7 @@ def create_loan(loan_object: LoanExample) -> Loan:
         RepaymentType.FIXED_PRINCIPAL: FixedPrincipalLoan,
         RepaymentType.INTEREST_ONLY: InterestOnlyLoan,
     }
-    return loan_types[loan_object.repayment_type](
+    return loan_types[loan_object.repayment_type].build_helpful(
         loan_amount=loan_object.loan_amount,
         interest_rate=loan_object.interest_rate,
         total_repayments=loan_object.total_repayments

@@ -50,7 +50,7 @@ def _to_decimal(value: Any) -> Decimal:
     return Decimal(str(value))
 
 
-def _decimal(round_to: int = None) -> Callable:
+def _decimal(round_to: int | None = None) -> Callable:
     """Decorator for the `_to_decimal` function with an optional precision to round to."""
     def decorator(func: Callable) -> Callable:
         @wraps(func)

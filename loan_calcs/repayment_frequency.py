@@ -4,20 +4,23 @@ The loan repayment frequency.
 This is flexible enough to support frequencies such as "every 2 months" instead of the usual "monthly" or "quarterly"
 frequencies that loan repayments are usually made over.
 """
-from enum import Enum, auto
+
+import enum
 
 
 # noinspection PyArgumentList
-class RepaymentInterval(Enum):
+class RepaymentInterval(enum.Enum):
     """The interval over which the repayments are made."""
-    YEARLY = auto()
-    MONTHLY = auto()
-    WEEKLY = auto()
-    DAILY = auto()
+
+    YEARLY = enum.auto()
+    MONTHLY = enum.auto()
+    WEEKLY = enum.auto()
+    DAILY = enum.auto()
 
 
-class RepaymentFrequency(Enum):
+class RepaymentFrequency(enum.Enum):
     """The frequency with which the repayments are made."""
+
     def __init__(
         self,
         repayment_unit: RepaymentInterval,
