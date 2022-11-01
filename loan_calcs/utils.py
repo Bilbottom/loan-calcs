@@ -48,11 +48,8 @@ def _to_decimal(value: Any) -> decimal.Decimal:
     Casting a float directly to a decimal messes with the precision so casting
     to a string first is preferable.
     """
-    # sourcery skip: assign-if-exp, reintroduce-else
-    if value is None:
-        # Purposely pass None into Decimal to generate the correct error
-        return Decimal(None)  # noqa
-    return decimal.Decimal(str(value))
+    # Purposely pass None into Decimal to generate the correct error
+    return Decimal(None) if value is None else decimal.Decimal(str(value))  # noqa
 
 
 def _decimal(round_to: int | None = None) -> Callable:

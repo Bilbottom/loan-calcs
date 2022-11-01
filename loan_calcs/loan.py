@@ -16,6 +16,7 @@ from loan_calcs.utils import (
 )
 
 
+# sourcery skip: snake-case-functions
 class Loan(abc.ABC):
     """
     A loan, which is a fixed value of money borrowed by an entity and usually
@@ -26,12 +27,12 @@ class Loan(abc.ABC):
         * :math:`R`: Periodic interest rate.
         * :math:`N`: Total number of repayments.
         * :math:`P`: Total periodic repayment value (the principal part has a
-          subscripted :math:`p`, :math:`P_{p}`).
+          subscript :math:`p`, :math:`P_{p}`).
         * :math:`b`: Whether the interest is applied before or after the
           repayment.
         * :math:`B_n`: The balance on the loan at period :math:`n`.
 
-    The repayment for a loan usually has (at least) 2 components:
+    The repayment for a loan typically has (at least) 2 components:
         * The *principal* part, which is paying off the original money that was
           borrowed.
         * The *interest* part, which is paying off the interest applied on the
@@ -42,7 +43,8 @@ class Loan(abc.ABC):
     """
 
     def __init__(
-        self, *,
+        self,
+        *,
         loan_amount: decimal.Decimal,
         interest_rate: decimal.Decimal,
         total_repayments: decimal.Decimal,
@@ -58,7 +60,6 @@ class Loan(abc.ABC):
             * For a fixed principal loan, this corresponds to the principal part
               of the repayment value.
         """
-
         self.interest_rate_type = interest_rate_type
         self.before_or_after = before_or_after
         self.loan_amount = loan_amount
@@ -77,6 +78,9 @@ class Loan(abc.ABC):
         before_or_after: InterestApplyMethod = InterestApplyMethod.BEFORE,
         interest_rate_type: InterestRateType = InterestRateType.VARIABLE
     ) -> Self:
+        """
+        Build the loan using all 4 of the key components.
+        """
         return cls(
             loan_amount=_to_decimal(loan_amount),
             interest_rate=_to_decimal(interest_rate),
@@ -97,7 +101,8 @@ class Loan(abc.ABC):
         before_or_after: InterestApplyMethod = InterestApplyMethod.BEFORE,
         interest_rate_type: InterestRateType = InterestRateType.VARIABLE
     ) -> Self:
-        """Create a loan.
+        """
+        Create a loan.
 
         The `fixed_periodic_repayment` argument depends on the loan type:
             * For a fixed repayment loan, this corresponds to the total
@@ -105,8 +110,8 @@ class Loan(abc.ABC):
             * For a fixed principal loan, this corresponds to the principal part
               of the repayment value.
         """
-
-        if (loan_amount is not None
+        if (
+            loan_amount is not None
             and interest_rate is not None
             and total_repayments is not None
             and fixed_periodic_repayment is not None
@@ -139,7 +144,7 @@ class Loan(abc.ABC):
                 and interest_rate is not None
                 and total_repayments is not None
             )
-            fixed_periodic_repayment = cls._build__calculate_periodic_repayment()
+            fixed_periodic_repayment = cls._build__calculate_fixed_periodic_repayment()
         else:
             raise ValueError("Something has gone really wrong.")
 
@@ -154,42 +159,59 @@ class Loan(abc.ABC):
 
     @property
     def total_amortised_rate(self) -> decimal.Decimal:
-        """Calculate the amortised rate at the complete term."""
+        """
+        Calculate the amortised rate at the complete term.
+        """
         return _calculate_amortised_rate(self.interest_rate, self.total_repayments)
 
     @classmethod
     def _build__calculate_loan_amount(cls) -> decimal.Decimal:
-        """Calculate the loan amount, :math:`L`."""
+        """
+        Calculate the loan amount, :math:`L`.
+        """
         raise NotImplementedError(f"{cls}._build__calculate_loan_amount has not been defined")
 
     @classmethod
     def _build__calculate_interest_rate(cls) -> decimal.Decimal:
-        """Calculate the loan amount, :math:`L`."""
+        """
+        Calculate the loan interest rate, :math:`R`.
+        """
         raise NotImplementedError(f"{cls}._build__calculate_interest_rate has not been defined")
 
     @classmethod
-    def _build__calculate_periodic_repayment(cls) -> decimal.Decimal:
-        """Calculate the periodic repayment value, :math:`P`."""
-        raise NotImplementedError(f"{cls}._build__calculate_periodic_repayment has not been defined")
+    def _build__calculate_fixed_periodic_repayment(cls) -> decimal.Decimal:
+        """
+        Calculate the periodic repayment value, :math:`P`.
+        """
+        raise NotImplementedError(f"{cls}._build__calculate_fixed_periodic_repayment has not been defined")
 
     @classmethod
     def _build__calculate_total_repayments(cls) -> decimal.Decimal:
-        """Calculate the total number of repayments, :math:`N`."""
+        """
+        Calculate the total number of repayments, :math:`N`.
+        """
         raise NotImplementedError(f"{cls}._build__calculate_total_repayments has not been defined")
 
     @abc.abstractmethod
     def calculate_balance_at_period(self, period: int) -> decimal.Decimal:
-        """Calculate the loan balance, :math:`B_{n}`, at the end of period :math:`n`."""
+        """
+        Calculate the loan balance, :math:`B_{n}`, at the end of period
+        :math:`n`.
+        """
         pass
 
     @abc.abstractmethod
     def calculate_repayment_principal_at_period(self, period: int) -> decimal.Decimal:
-        """Calculate the principal part of the repayment due on period :math:`n`."""
+        """
+        Calculate the principal part of the repayment due on period :math:`n`.
+        """
         pass
 
     @abc.abstractmethod
     def calculate_repayment_interest_at_period(self, period: int) -> decimal.Decimal:
-        """Calculate the interest part of the repayment due on period :math:`n`."""
+        """
+        Calculate the interest part of the repayment due on period :math:`n`.
+        """
         pass
 
     @abc.abstractmethod
@@ -213,7 +235,7 @@ class FixedRepaymentLoan(Loan):
     same value.
     """
 
-    _type: RepaymentType = RepaymentType.FIXED_REPAYMENT
+    _type = RepaymentType.FIXED_REPAYMENT
 
     @_decimal(round_to=2)
     def _build__calculate_loan_amount(self) -> decimal.Decimal:
@@ -238,7 +260,14 @@ class FixedRepaymentLoan(Loan):
         )
 
     @_decimal(round_to=2)
-    def _build__calculate_periodic_repayment(self) -> decimal.Decimal:
+    def _build__calculate_interest_rate(self) -> decimal.Decimal:
+        """
+        Calculate the loan interest rate, :math:`R`.
+        """
+        raise NotImplementedError(f"{type(self).__name__}._build__calculate_interest_rate has not been defined")
+
+    @_decimal(round_to=2)
+    def _build__calculate_fixed_periodic_repayment(self) -> decimal.Decimal:
         """
         Calculate the period repayment (:math:`P`).
 
@@ -288,8 +317,8 @@ class FixedRepaymentLoan(Loan):
         if denominator <= 0:
             # return math.inf
             raise ValueError(
-                "The values of the loan amount, interest rate, and periodic repayment lead to an unbounded number of"
-                " repayments."
+                "The values of the loan amount, interest rate, and periodic"
+                " repayment lead to an unbounded number of repayments."
             )
         else:
             return math.ceil(
@@ -384,47 +413,12 @@ class FixedPrincipalLoan(Loan):
     A fixed principal loan is similar to a fixed repayment loan where each
     repayment pays off some original loan amount and also some interest.
     However, only the principal part of each repayment has the same value.
+
+    TODO: A fixed principal loan should only have `before_or_after = BEFORE`, but can we account for the other case?
+        The solution looks tricky to find analytically, so might need a numerical solution.
     """
 
     _type = RepaymentType.FIXED_PRINCIPAL
-
-    def build(
-        self,
-        *,
-        loan_amount: float | None = None,
-        interest_rate: float | None = None,
-        total_repayments: int | None = None,
-        fixed_periodic_repayment: float | None = None,
-        before_or_after: InterestApplyMethod = InterestApplyMethod.BEFORE
-    ):
-        """
-        Create a fixed principal loan.
-
-        A fixed repayment loan has 4 key properties:
-            * The loan amount
-            * The interest rate
-            * The number of repayments
-            * The principal repayment value
-
-        What makes a fixed principal loan different is that the total repayment
-        amount changes each period since instead the principal component is kept
-        fixed. Additionally, the principal component can either be calculated
-        (using the loan amount and total number of repayments) or set by the
-        user.
-
-        TODO: A fixed principal loan should only have `before_or_after = BEFORE`, but can we account for the other case?
-            The solution looks tricky to find analytically, so might need a numerical solution.
-        """
-        if before_or_after != InterestApplyMethod.BEFORE:
-            raise ValueError("The calculations are only correct for `before_or_after = InterestApplyMethod.BEFORE`.")
-
-        super().__init__(
-            loan_amount=loan_amount,
-            interest_rate=interest_rate,
-            total_repayments=total_repayments,
-            fixed_periodic_repayment=fixed_periodic_repayment,
-            before_or_after=before_or_after,
-        )
 
     @property
     def principal_repayment(self, custom_periodic_repayment: decimal.Decimal | None = None) -> decimal.Decimal:
@@ -437,13 +431,13 @@ class FixedPrincipalLoan(Loan):
             2. The periodic principal is a fixed amount, with the difference
                added on the final repayment (the balloon)
         """
-        quotient = self.loan_amount / self.total_repayments
+        calculated_principal_repayment = self.loan_amount / self.total_repayments
         if custom_periodic_repayment is None:
-            return quotient
-        elif custom_periodic_repayment > quotient:
+            return calculated_principal_repayment
+        elif custom_periodic_repayment > calculated_principal_repayment:
             raise ValueError(
                 f"The custom periodic repayment amount, {custom_periodic_repayment:.4f}, exceeds the maximum value "
-                f"allowed by the loan value and the number of repayments, {quotient:.4f}"
+                f"allowed by the loan value and the number of repayments, {calculated_principal_repayment:.4f}"
             )
         else:
             return custom_periodic_repayment
@@ -461,19 +455,19 @@ class FixedPrincipalLoan(Loan):
             2. The loan value is a fixed amount, with lower value period
                repayments and a larger final repayment.
         """
-        calculated_loan = self.periodic_repayment * self.total_repayments
+        calculated_loan_amount = self.periodic_repayment * self.total_repayments
         if custom_loan_amount is None:
-            return calculated_loan
-        elif custom_loan_amount > calculated_loan:
+            return calculated_loan_amount
+        elif custom_loan_amount > calculated_loan_amount:
             raise ValueError(
                 f"The custom loan amount, {custom_loan_amount:.4f}, exceeds the minimum value allowed by the principal "
-                f"repayment amount and the number of repayments, {calculated_loan:.4f}"
+                f"repayment amount and the number of repayments, {calculated_loan_amount:.4f}"
             )
         else:
             return custom_loan_amount
 
     @_decimal(round_to=2)
-    def _build__calculate_periodic_repayment(self, custom_periodic_repayment: decimal.Decimal = None) -> decimal.Decimal:
+    def _build__calculate_fixed_periodic_repayment(self, custom_periodic_repayment: decimal.Decimal = None) -> decimal.Decimal:
         """
         Calculate the period repayment, :math:`P`.
 
@@ -482,6 +476,7 @@ class FixedPrincipalLoan(Loan):
         ..  math::
 
             P = L/N + interest amount  TODO: Determine the interest amount  --  or, adjust to be more like the init args. ie this calcs the corresponding fixed value, but also there is a method for repayment due at `n`
+            TODO: This should only be the fixed amount, not the fixed amount plus the interest amount
 
         Note that, for the fixed principal loan, we could have 2 scenarios:
             1. The periodic principal is the loan value divided by the number of
@@ -489,13 +484,13 @@ class FixedPrincipalLoan(Loan):
             2. The periodic principal is a fixed amount, with the difference
                added on the final repayment (the balloon)
         """
-        quotient = self.loan_amount / self.total_repayments
+        calculated_periodic_repayment = self.loan_amount / self.total_repayments
         if custom_periodic_repayment is None:
-            return quotient
-        elif custom_periodic_repayment > quotient:
+            return calculated_periodic_repayment
+        elif custom_periodic_repayment > calculated_periodic_repayment:
             raise ValueError(
                 f"The custom periodic repayment amount, {custom_periodic_repayment:.4f}, exceeds the maximum value "
-                f"allowed by the loan value and the number of repayments, {quotient:.4f}"
+                f"allowed by the loan value and the number of repayments, {calculated_periodic_repayment:.4f}"
             )
         else:
             return custom_periodic_repayment
@@ -513,13 +508,13 @@ class FixedPrincipalLoan(Loan):
             2.  The total repayments is a fixed amount, with lower value period
                 repayments and a larger final repayment.
         """
-        calculated_repayments = math.ceil(self.loan_amount / self.principal_repayment)
+        calculated_total_repayments = math.ceil(self.loan_amount / self.principal_repayment)
         if custom_total_repayments is None:
-            return calculated_repayments
-        elif custom_total_repayments > calculated_repayments:
+            return calculated_total_repayments
+        elif custom_total_repayments > calculated_total_repayments:
             raise ValueError(
                 f"The custom number of repayments, {custom_total_repayments:.4f}, exceeds the maximum value "
-                f"allowed by the loan value and the principal repayment value, {calculated_repayments:.4f}"
+                f"allowed by the loan value and the principal repayment value, {calculated_total_repayments:.4f}"
             )
         else:
             return custom_total_repayments
@@ -569,43 +564,10 @@ class InterestOnlyLoan(Loan):
     the final repayment.
 
     TODO: An interest-only loan is just a special case of a fixed principal loan (fixed principal = 0).
+    TODO: An interest-only loan can only have `before_or_after = BEFORE`.
     """
 
     _type = RepaymentType.INTEREST_ONLY
-
-    def build(
-        self,
-        *,
-        loan_amount: float | None = None,
-        interest_rate: float | None = None,
-        total_repayments: int | None = None,
-        fixed_periodic_repayment: float | None = None,
-        before_or_after: InterestApplyMethod = InterestApplyMethod.BEFORE
-    ):
-        """
-        Create an interest-only loan.
-
-        An interest-only loan has 4 key properties:
-            * The loan amount
-            * The interest rate
-            * The number of repayments
-            * The repayment value
-
-        The loan amount, interest rate, and repayment value are each related
-        such that with any 2 the 3rd can be determined. However, the number of
-        repayments must be set by the user: the balance does not change
-        throughout the life of the loan, so the loan could continue
-        indefinitely.
-
-        TODO: An interest-only loan can only have `before_or_after = BEFORE`
-        """
-        super().build(
-            loan_amount=loan_amount,
-            interest_rate=interest_rate,
-            total_repayments=total_repayments,
-            fixed_periodic_repayment=fixed_periodic_repayment,
-            before_or_after=before_or_after
-        )
 
     @_decimal(round_to=2)
     def _build__calculate_loan_amount(self) -> decimal.Decimal:
@@ -624,7 +586,7 @@ class InterestOnlyLoan(Loan):
         return self.periodic_repayment / self.interest_rate
 
     @_decimal(round_to=2)
-    def _build__calculate_periodic_repayment(self) -> decimal.Decimal:
+    def _build__calculate_fixed_periodic_repayment(self) -> decimal.Decimal:
         """
         Calculate the period repayment, :math:`P`.
 

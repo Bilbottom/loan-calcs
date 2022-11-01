@@ -382,7 +382,7 @@ rules:
   pattern: |
       def ${name}(..., ${arg}: !!!=${default?}, ...):
           ...
-  condition: not name.starts_with("_") and not arg.equals("self") and not arg.equals("cls")
+  condition: not name.starts_with("_") and not arg.equals("self") and not arg.equals("cls") and not arg.equals("*")
   paths:
     exclude:
       - test/
