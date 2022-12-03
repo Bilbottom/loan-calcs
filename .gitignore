@@ -1,4 +1,5 @@
-### Data files
+
+# Data files
 *.[cpt]sv
 *.xls?
 *.db
@@ -14,8 +15,6 @@
 /tex/compiled/
 !/tex/compiled/proofs.pdf
 
-
-### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -12,7 +12,7 @@ from loan_calcs.loan import (
     RepaymentType,
     FixedRepaymentLoan,
     FixedPrincipalLoan,
-    InterestOnlyLoan
+    InterestOnlyLoan,
 )
 
 

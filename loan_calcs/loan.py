@@ -1,5 +1,5 @@
 """
-
+Different types of loans and ways to set them up.
 """
 import abc
 import decimal
