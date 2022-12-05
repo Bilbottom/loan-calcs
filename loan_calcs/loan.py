@@ -4,7 +4,7 @@ Different types of loans and ways to set them up.
 import abc
 import decimal
 import math
-from typing_extensions import Self
+from typing import Self
 
 from loan_calcs.utils import (
     RepaymentType,
