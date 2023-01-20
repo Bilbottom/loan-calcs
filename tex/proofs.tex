@@ -39,4 +39,52 @@ In `real life', a loan can have other components such as fees.\ These are outsid
 \section{Periodic~Repayment~Amount}\label{sec:periodic-repayment-amount}
 
 
+
+\section{From~Confluence}
+
+\begin{itemize}
+    \item[$P$:] the constant regular repayment amount each period
+    \item[$R$:] the interest rate per period
+    \item[$S$:] the starting loan amount
+    \item[$B_{n}$:] the balance on the loan at period $n$, with $B_{0} = S$
+\end{itemize}
+
+
+\subsection{Repayment~Amount}
+
+\[
+    P = \frac{ SR(R + 1)^{n} }{ [(R + 1)^{n} - 1] }
+\]
+
+
+\subsection{Repayment~Length}
+
+\subsubsection{Log~Form}
+
+\[
+    n = \log_{R + 1}\frac{P}{P - SR}
+\]
+
+\subsubsection{Natural~Log~Form}
+
+\[
+    n = \frac{ \ln P/(P - SR) }{ \ln(R + 1) }
+\]
+
+
+\subsection{Balance~at~Period~n}
+
+\[
+    B_{n} = S(R + 1)^{n} - \frac{P((R + 1)^{n} - 1)}{R}
+\]
+
+
+\subsection{Sum~of~Interest~by~Period~n}
+
+\[
+    I_{n} = PR + \frac{(SR - P)((R + 1)^{n} - 1)}{R}
+\]
+
+
+
 \end{document}
