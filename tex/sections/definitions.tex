@@ -1,0 +1,42 @@
+
+\section{Definitions}\label{sec:definitions}
+
+
+\subsection{Notation}\label{subsec:notation}
+
+A loan is a fixed value of money borrowed by an entity and usually repaid over a series of instalments.\ The following notation is used for each of the components of the loan:
+\begin{itemize}
+    \item[\(L\):] Loan amount (decimal).
+    \item[\(R\):] Periodic interest rate (decimal).
+    \item[\(N\):] Total number of repayments (integer).
+    \item[\(P\):] Total periodic repayment value (decimal).\ If this changes over time, the value at period \(n\) is denoted \(P_{n}\).
+    \item[\(b\):] Whether the interest is applied before or after the repayment (boolean).
+    \item[\(B_{n}\):] The balance on the loan at period \(n\) (decimal).\ Note that \(B_{0} = L\).
+\end{itemize}
+
+The periodic repayment for a loan usually has (at least) 2 components:
+\begin{itemize}
+    \item[\(P_{P}\):] The principal part of the periodic repayment value, which is paying off the original money that was borrowed.
+    \item[\(P_{I}\):] The interest part of the periodic repayment value, which is paying off the interest applied on the loan.
+\end{itemize}
+
+In `real life', a loan can have other components such as fees.\ These are outside the scope of these calculations.
+
+
+\subsection{Helpful Formulae}\label{subsec:helpful-formulae}
+
+The finite sum of a geometric series:
+\begin{equation*}
+    \sum_{i = 0}^{n - 1} a^{i} = \frac{a_{n} - 1}{a - 1}
+\end{equation*}
+
+(See \url{https://en.wikipedia.org/wiki/Geometric\_series\#Finite\_series})
+
+
+\subsection{Loan~Types}\label{subsec:loan-types}
+There are 3 types of loans discussed here:
+\begin{enumerate}
+    \item Fixed Repayment Loans
+    \item Fixed Principal Loans
+    \item Interest Only Loans
+\end{enumerate}

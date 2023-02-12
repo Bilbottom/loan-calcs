@@ -1,0 +1,119 @@
+
+\section{Fixed~Repayment~Loan}\label{sec:fixed-repayment-loan}
+
+
+\subsection{Balance~at~a~period}\label{subsec:frl-balance-at-n}
+
+The formula for \(B_{k + 1}\) for some \(k\) is:
+\begin{equation*}
+    \begin{split}
+        B_{k + 1} & = \begin{cases}
+            B_{k}R - P + B_{k} & \text{if interest is applied before, $b = 0$}\\
+            (B_{k} - P)R + B_{k} & \text{if interest is applied after, $b = 1$}\\
+        \end{cases}\\
+        & = B_{k}R - PR^{b} + B_{k}\\
+        & = B_{k}(R + 1) - PR^{b}\\
+    \end{split}
+\end{equation*}
+
+By definition, we know that \(B_{0} = L\).\ Therefore, we can expand the above formula and express it in terms of \(B_{0} = L\):
+\begin{equation*}
+    \begin{split}
+        B_{k + 1} & = B_{k}(R + 1) - PR^{b}\\
+        & = \left[ B_{k - 1}(R + 1) - PR^{b} \right](R + 1) - PR^{b}\\
+        & = B_{k - 1}(R + 1)^{2} - PR^{b}(R + 1) - PR^{b}\\
+        & = \left[ B_{k - 2}(R + 1) - PR^{b} \right](R + 1)^{2} - PR^{b}(R + 1) - PR^{b}\\
+        & = B_{k - 2}(R + 1)^{3} - PR^{b}(R + 1)^{2} - PR^{b}(R + 1) - PR^{b}
+    \end{split}
+\end{equation*}
+
+Continuing this iteratively leads to the expression
+\begin{equation*}
+    B_{k - i}(R + 1)^{i + 1} - PR^{b}\left[(R + 1)^{i} + (R + 1)^{i - 1} + ... + (R + 1)^{1} + (R + 1)^{0}\right]
+\end{equation*}
+so that
+\begin{equation*}
+    B_{k + 1} = B_{k - i}(R + 1)^{i + 1} - PR^{b}\sum_{x = 0}^{i}(R + 1)^{x}
+\end{equation*}
+
+Let \(i = k\) and then \(k = n + 1\) so that:
+\begin{equation*}
+    \begin{split}
+        B_{k + 1} & = B_{0}(R + 1)^{k + 1} - PR^{b}\sum_{x = 0}^{k}(R + 1)^{x}\\
+        B_{n} & = B_{0}(R + 1)^{n} - PR^{b}\sum_{x = 0}^{n - 1}(R + 1)^{x}\\
+    \end{split}
+\end{equation*}
+
+Using the formula for the sum of a geometric series, the summation can be replaced with its corresponding
+ quotient:
+\begin{equation*}
+    \begin{split}
+        B_{n} & = B_{0}(R + 1)^{n} - PR^{b}\frac{(R + 1)^{n} - 1}{R + 1 - 1}\\
+        & = B_{0}(R + 1)^{n} - PR^{b - 1}\left[(R + 1)^{n} - 1\right]\\
+        & = B_{0}(R + 1)^{n} - PR^{b - 1}(R + 1)^{n} + PR^{b - 1}\\
+        & = (R + 1)^{n}\left[B_{0} - PR^{b - 1}\right] + PR^{b - 1}\\
+    \end{split}
+\end{equation*}
+
+Expressing this using \(L\) instead of \(B_{0}\) looks like either of the following:
+\begin{gather*}
+    B_{n} = L(R + 1)^{n} - PR^{b - 1}\left[(R + 1)^{n} - 1\right]\\
+    B_{n} = (R + 1)^{n}\left[L - PR^{b - 1}\right] + PR^{b - 1}\\
+\end{gather*}
+
+
+\subsection{Periodic~Repayment~Amount}\label{subsec:frl-periodic-repayment-amount}
+To find \(P\), we can solve for \(B_{N} = 0\) which corresponds to the balance on the load being 0 at the completion of its term.
+\begin{equation*}
+    \begin{split}
+        B_{N} = 0 & \implies L(R + 1)^{N} - PR^{b - 1}\left[(R + 1)^{N} - 1\right] = 0\\
+        & \implies L(R + 1)^{N} = PR^{b - 1}\left[(R + 1)^{N} - 1\right]\\
+        & \implies \frac{L(R + 1)^{N}}{(R + 1)^{N} - 1} = PR^{b - 1}\\
+        & \implies P = \frac{LR^{1 - b}(R + 1)^{N}}{(R + 1)^{N} - 1}\\
+    \end{split}
+\end{equation*}
+
+
+\subsection{Loan~Amount}\label{subsec:frl-loan-amount}
+To find \(L\), we can re-arrange the formula for \(P\):
+\begin{equation*}
+    P = \frac{LR^{1 - b}(R + 1)^{N}}{(R + 1)^{N} - 1}
+    \implies
+    L = \frac{PR^{b - 1}\left[(R + 1)^{N} - 1\right]}{(R + 1)^{N}}
+\end{equation*}
+
+
+\subsection{Loan~Term}\label{subsec:frl-loan-term}
+To get \(N\), we can re-arrange the formula for either \(P\) or \(L\):
+\begin{equation*}
+    \begin{split}
+        & L(R + 1)^{N} = PR^{b - 1}\left[(R + 1)^{N} - 1\right]\\
+        \implies & L(R + 1)^{N} = PR^{b - 1}(R + 1)^{N} - PR^{b - 1}]\\
+        \implies & PR^{b - 1} = PR^{b - 1}(R + 1)^{N} - L(R + 1)^{N}\\
+        \implies & PR^{b - 1} = \left[PR^{b - 1} - L\right](R + 1)^{N}\\
+        \implies & (R + 1)^{N} = \frac{PR^{b - 1}}{PR^{b - 1} - L}\\
+        \implies & (R + 1)^{N} = \frac{1}{1 - LP^{-1}R^{1 - b}}\\
+        \implies & (R + 1)^{N} = (1 - LP^{-1}R^{1 - b})^{-1}\\
+        \implies & N \ln{(R + 1)} = -\ln{(1 - LP^{-1}R^{1 - b})}\\
+        \implies & N = -\frac{\ln{(1 - LP^{-1}R^{1 - b})}}{\ln{(R + 1)}}\\
+    \end{split}
+\end{equation*}
+
+Note that we need:
+\begin{equation*}
+    P - LR^{1 - b} > 0 \implies P > LR^{1 - b}
+\end{equation*}
+
+Rather than using the natural log, \(\ln\), we can express this using an explicit base:
+\begin{equation*}
+    \begin{split}
+        & N = -\frac{\ln{(1 - LP^{-1}R^{1 - b})}}{\ln{(R + 1)}}\\
+        \implies & N = -\frac{\ln{ \frac{P - LR^{1 - b}}{P} }}{\ln{(R + 1)}}\\
+        \implies & N = \frac{\ln{ \frac{P}{P - LR^{1 - b}} }}{\ln{(R + 1)}}\\
+        \implies & N = \log_{R + 1} \left(\frac{P}{P - LR^{1 - b}}\right)\\
+    \end{split}
+\end{equation*}
+
+
+\subsection{Periodic~Interest~Rate}\label{subsec:frl-periodic-interest-rate}
+We don't have a formula for \(R\) yet.

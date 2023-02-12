@@ -1,0 +1,39 @@
+
+\section{Fixed~Principal~Loan}\label{sec:fixed-principal-loan}
+
+
+\subsection{Balance~at~a~period}\label{subsec:fpl-balance-at-n}
+
+Recall that \(P = P_{P} + P_{I}\).\ Extend the subscript notion so that:
+\begin{itemize}
+    \item \(P_{n}\) is the total payment made for period \(n\).
+    \item \(P_{P, n}\) is the principal payment made for period \(n\).
+    \item \(P_{I, n}\) is the interest payment made for period \(n\).
+\end{itemize}
+
+For a fixed principal loan, the value \(P_{P, n} = P_{P}\) will be fixed for all \(n\) but \(P_{I, n}\) will vary.\ In particular:
+\begin{equation*}
+    P_{I, n} = RB_{n - 1} \implies P_{n} = P_{P} + RB_{n - 1}
+\end{equation*}
+
+We saw above that the formula for \(B_{n}\) is:
+\begin{equation*}
+    B_{n} = L(R + 1)^{n} - PR^{b - 1}\left[(R + 1)^{n} - 1\right]
+\end{equation*}
+
+Combining the two formulae above, we see that:
+\begin{equation*}
+    \begin{split}
+        P_{I, n} & = RB_{n - 1}\\
+        & = R\left[ L(R + 1)^{n - 1} - PR^{b - 1}\left[(R + 1)^{n - 1} - 1\right] \right]\\
+        & = LR(R + 1)^{n - 1} - PR^{b}\left[(R + 1)^{n - 1} - 1\right]\\
+    \end{split}
+\end{equation*}
+
+Additionally, it follows that:
+\begin{equation*}
+    \begin{split}
+        P_{n} & = P_{P} + RB_{n - 1}\\
+        & = P_{P} +  LR(R + 1)^{n - 1} - PR^{b}\left[(R + 1)^{n - 1} - 1\right]\\
+    \end{split}
+\end{equation*}
