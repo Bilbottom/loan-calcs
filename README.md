@@ -27,4 +27,4 @@ In 'real life', a loan can have other components such as fees. These are outside
 
 ## Calculations
 
-Many of the properties are calculated analytically. The calculations are described in the `tex/proofs.pdf` file.
+Many of the properties are calculated analytically. The calculations are described in the [`tex/proofs.pdf`](tex/proofs.pdf) file.
