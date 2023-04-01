@@ -3,12 +3,11 @@
 name: build-latex-document
 run-name: Build LaTeX document
 on:
-  - push
-#  push:
-#    branches:
-#      - main
-#    paths:
-#      - 'tex/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'tex/**'
 
 jobs:
   build-latex:
