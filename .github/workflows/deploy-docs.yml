@@ -3,27 +3,36 @@
 name: build-latex-document
 run-name: Build LaTeX document
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'tex/**'
+  - push
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - 'tex/**'
 
 jobs:
   build-latex:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Git repository
+      - name: 🛠️ Set up Git repository
         uses: actions/checkout@v3
 
-      - name: Compile LaTeX document
+      - name: 📝 Compile LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
           working_directory: tex
           root_file: proofs.tex
 
-      - name: Upload PDF file
-        uses: actions/upload-artifact@v3
-        with:
-          name: PDF
-          path: tex/proofs.pdf
+#      - name: ⬆️ Upload PDF file
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: PDF
+#          path: tex/proofs.pdf
+
+      - name: ⬆️ Add the PDF file
+        run: |
+          git config --global user.name 'Bill Wallis (GHA)'
+          git config --global user.email 'bilbottom@users.noreply.github.com'
+          git add -- tex/proofs.pdf
+          git commit --message "📝 docs: Compile LaTeX document"
+          git push
