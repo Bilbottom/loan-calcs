@@ -1,10 +1,11 @@
 ---
 # https://github.com/marketplace/actions/github-action-for-latex
-name: Build LaTeX document
+name: build-latex-document
+run-name: Build LaTeX document
 on:
   push:
-#    branches:
-#      - main
+    branches:
+      - main
     paths:
       - 'tex/**'
 
@@ -18,7 +19,8 @@ jobs:
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
-          root_file: tex/proofs.tex
+          working_directory: tex
+          root_file: proofs.tex
 
       - name: Upload PDF file
         uses: actions/upload-artifact@v3
