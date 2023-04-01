@@ -6,6 +6,8 @@ on:
   push:
     paths:
       - 'tex/**'
+    branches-ignore:
+      - main
 
 jobs:
   build-latex:
