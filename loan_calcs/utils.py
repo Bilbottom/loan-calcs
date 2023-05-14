@@ -3,9 +3,9 @@ All handy enums and module functions that can be used throughout the package.
 """
 from __future__ import annotations
 
-import decimal
 import enum
 import functools
+from decimal import Decimal
 from typing import Any, Callable
 
 
@@ -45,13 +45,13 @@ class InterestApplyMethod(enum.Enum):
     AFTER = 1
 
 
-def _to_decimal(value: Any) -> decimal.Decimal:
+def _to_decimal(value: Any) -> Decimal:
     """
     Casting a float directly to a decimal messes with the precision so casting
     to a string first is preferable.
     """
     # Purposely pass None into Decimal to generate the correct error
-    return Decimal(None) if value is None else decimal.Decimal(str(value))  # noqa
+    return Decimal(None) if value is None else Decimal(str(value))  # noqa
 
 
 def _decimal(round_to: int | None = None) -> Callable:
@@ -70,7 +70,7 @@ def _decimal(round_to: int | None = None) -> Callable:
     return decorator
 
 
-def _calculate_amortised_rate(interest_rate: decimal.Decimal, n: decimal.Decimal) -> decimal.Decimal:
+def _calculate_amortised_rate(interest_rate: Decimal, n: Decimal) -> Decimal:
     """
     Calculate the amortised rate at `n`.
 
@@ -79,4 +79,4 @@ def _calculate_amortised_rate(interest_rate: decimal.Decimal, n: decimal.Decimal
     """
     if n < 0:
         raise AssertionError("The amortise rate period has to be positive.")
-    return _to_decimal((decimal.Decimal(1) + interest_rate) ** n)
+    return _to_decimal((Decimal(1) + interest_rate) ** n)
